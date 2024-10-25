@@ -1,0 +1,142 @@
+{
+    "hal1": {
+        "status": "ok",
+        "metadata": {
+            "extractor_id": "0d5b82bc-7198-40b8-bcfb-cd420da99aad",
+            "request_id": "f3dc85ff-b5cf-4f56-b5b8-515b03266ab6",
+            "usage": 1
+        },
+        "documents": [
+            {
+                "extractor_id": "0d5b82bc-7198-40b8-bcfb-cd420da99aad",
+                "metadata": {
+                    "page_no": 1,
+                    "slice_no": 1,
+                    "extractor_type": "custom"
+                },
+                "data": {
+                    "matakuliah": "BAHASA INGGRIS\nPENGANTAR TEKNOLOGI INFORMASI\nPRAKTEK PENGANTAR TEKNOLOGI INFORMASI\nFISIKA DASAR\nLOGIKA DAN ALGORITMA\nPRAKTEK LOGIKA DAN ALGORITMA\nMANAJEMEN UMUM\nPENDIDIKAN AGAMA\nBAHASA INDONESIA\nKALKULUS II\nSTATISTIK DASAR\nPRAKTEK STRUKTUR DATA\nSISTEM OPERASI\nPRAKTEK SISTEM OPERASI\nILMU SOSIAL DASAR\nPENDIDIKAN PANCASILA & KEWARGANEGARAAN\nPEMROGRAMAN VISUAL\nSISTEM INFORMASI MANAJEMEN\nK-3 DAN HUKUM KENAKER\nRANGKAIAN DIGITAL\nPRAKTEK RANGKAIAN DIGITAL\nORGANISASI DAN ARSITEKTUR KOMPUTER\nBASIS DATA\nPRAKTEK BASIS DATA\nKALKULUS I\nMATEMATIKA DISKRIT\nTEKNIK SIMULASI\nPRAKTEK PEMROGRAMAN VISUAL\nALJABAR LINIER DAN MATRIKS\nPRAKTEK PEMROGRAMAN BERORIENTASI OBJEK\nETIKA PROFESI\nINTERAKSI MANUSIA DAN KOMPUTER\nPRAKTEK TEKNIK RISET OPERASIONAL\nTEORI BAHASA AUTOMATA\nMETODE NUMERIK\nGRAFIKA KOMPUTER\nANALISA & PERANCANGAN SISTEM\nPEMROGRAMAN BERORIENTASI OBJEK\nSTRUKTUR DATA\nREKAYASA PERANGKAT LUNAK\nTEKNIK RISET OPERASIONAL\nPEMROGRAMAN WEB I\nPRAKTEK PEMROGRAMAN WEB I\nKOMUNIKASI DATA DAN JARINGAN KOMPUTER\nPRAKTEK KOMUNIKASI DATA & JARINGAN KOMPUTER\nSISTEM CERDAS\nPRAKTEK SISTEM CERDAS\nPRAKTEK GRAFIKA KOMPUTER\nPEMROGRAMAN WEB II\nPRAKTEK PEMROGRAMAN WEB II\nSISTEM PENDUKUNG KEPUTUSAN\nMULTIMEDIA\nPRAKTEK MULTIMEDIA\nDATA MINING\nPRAKTEK DATA MINING\nKOMPUTASI PARALEL & TERDISTRIBUSI\nKEAMANAN KOMPUTER\nPRAKTEK INTERAKSI MANUSIA DAN KOMPUTER\nKERJA PRAKTEK\nKULIAH KERJA NYATA",
+                    "kd_matkul": "4110201\n4120101\n4120102\n4120401\n4120501\n4120502\n4140501\n10101\n10501\n20123\n20501\n207431\n30123\n301231\n10522\n4110401\n4120601\n4130401\n23062\n4120801\n4120802\n4121101\n4130301\n4130302\n20113\n20853\n32253\n4120602\n4120701\n4120902\n4150101\n31063\n4121402\n30573\n4121201\n31573\n31943\n4120901\n20743\n30763\n4121401\n4121811\n4121812\n4130601\n4130602\n4131101\n4131102\n315731\n4121911\n4121912\n4122001\n4122101\n4122102\n4122301\n4122302\n4130101\n4140401\n310631\n34072\n34183",
+                    "sks": "3\n3\n1\n3\n3\n1\n2\n2\n2\n3\n2\n1\n3\n1\n2\n3\n2\n3\n2\n2\n1\n3\n3\n1\n3\n3\n2\n1\n3\n1\n2\n3\n1\n3\n3\n3\n3\n3\n3\n3\n2\n3\n1\n3\n1\n3\n1\n1\n3\n1\n3\n2\n1\n2\n1\n3\n3\n1\n2\n3",
+                    "st_mk": "1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n2\n1\n1\n1\n1\n2\n1\n2\n1\n1\n1\n1\n1\n1\n1\n2\n2\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n2\n1",
+                    "nilai_akhir": "B\nC\nB\nC\nB\nB\nA\nC\nB\nC\nC\nB\nC\nC\nA\nC\nC\nC\nC\nC\nC\nA\nA\nB\nC\nC\nB\nC\nB\nC\nA\nC\nB\nB\nC\nA\nC\nB\nB\nC\nB\nC\nC\nB\nB\nA\nA\nC\nD\nC\nC\nE\nB\nB\nB\nA\nB\nA\nE\nA",
+                    "ket": "L\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nT\nL\nL\nT\nL\nL\nL\nL\nL\nL\nT\nL"
+                },
+                "detailed_data": {
+                    "matakuliah": [
+                        {
+                            "extracted_by": "detection_region",
+                            "value": "BAHASA INGGRIS\nPENGANTAR TEKNOLOGI INFORMASI\nPRAKTEK PENGANTAR TEKNOLOGI INFORMASI\nFISIKA DASAR\nLOGIKA DAN ALGORITMA\nPRAKTEK LOGIKA DAN ALGORITMA\nMANAJEMEN UMUM\nPENDIDIKAN AGAMA\nBAHASA INDONESIA\nKALKULUS II\nSTATISTIK DASAR\nPRAKTEK STRUKTUR DATA\nSISTEM OPERASI\nPRAKTEK SISTEM OPERASI\nILMU SOSIAL DASAR\nPENDIDIKAN PANCASILA & KEWARGANEGARAAN\nPEMROGRAMAN VISUAL\nSISTEM INFORMASI MANAJEMEN\nK-3 DAN HUKUM KENAKER\nRANGKAIAN DIGITAL\nPRAKTEK RANGKAIAN DIGITAL\nORGANISASI DAN ARSITEKTUR KOMPUTER\nBASIS DATA\nPRAKTEK BASIS DATA\nKALKULUS I\nMATEMATIKA DISKRIT\nTEKNIK SIMULASI\nPRAKTEK PEMROGRAMAN VISUAL\nALJABAR LINIER DAN MATRIKS\nPRAKTEK PEMROGRAMAN BERORIENTASI OBJEK\nETIKA PROFESI\nINTERAKSI MANUSIA DAN KOMPUTER\nPRAKTEK TEKNIK RISET OPERASIONAL\nTEORI BAHASA AUTOMATA\nMETODE NUMERIK\nGRAFIKA KOMPUTER\nANALISA & PERANCANGAN SISTEM\nPEMROGRAMAN BERORIENTASI OBJEK\nSTRUKTUR DATA\nREKAYASA PERANGKAT LUNAK\nTEKNIK RISET OPERASIONAL\nPEMROGRAMAN WEB I\nPRAKTEK PEMROGRAMAN WEB I\nKOMUNIKASI DATA DAN JARINGAN KOMPUTER\nPRAKTEK KOMUNIKASI DATA & JARINGAN KOMPUTER\nSISTEM CERDAS\nPRAKTEK SISTEM CERDAS\nPRAKTEK GRAFIKA KOMPUTER\nPEMROGRAMAN WEB II\nPRAKTEK PEMROGRAMAN WEB II\nSISTEM PENDUKUNG KEPUTUSAN\nMULTIMEDIA\nPRAKTEK MULTIMEDIA\nDATA MINING\nPRAKTEK DATA MINING\nKOMPUTASI PARALEL & TERDISTRIBUSI\nKEAMANAN KOMPUTER\nPRAKTEK INTERAKSI MANUSIA DAN KOMPUTER\nKERJA PRAKTEK\nKULIAH KERJA NYATA",
+                            "value_type": "scalar"
+                        }
+                    ],
+                    "kd_matkul": [
+                        {
+                            "extracted_by": "detection_region",
+                            "value": "4110201\n4120101\n4120102\n4120401\n4120501\n4120502\n4140501\n10101\n10501\n20123\n20501\n207431\n30123\n301231\n10522\n4110401\n4120601\n4130401\n23062\n4120801\n4120802\n4121101\n4130301\n4130302\n20113\n20853\n32253\n4120602\n4120701\n4120902\n4150101\n31063\n4121402\n30573\n4121201\n31573\n31943\n4120901\n20743\n30763\n4121401\n4121811\n4121812\n4130601\n4130602\n4131101\n4131102\n315731\n4121911\n4121912\n4122001\n4122101\n4122102\n4122301\n4122302\n4130101\n4140401\n310631\n34072\n34183",
+                            "value_type": "scalar"
+                        }
+                    ],
+                    "sks": [
+                        {
+                            "extracted_by": "detection_region",
+                            "value": "3\n3\n1\n3\n3\n1\n2\n2\n2\n3\n2\n1\n3\n1\n2\n3\n2\n3\n2\n2\n1\n3\n3\n1\n3\n3\n2\n1\n3\n1\n2\n3\n1\n3\n3\n3\n3\n3\n3\n3\n2\n3\n1\n3\n1\n3\n1\n1\n3\n1\n3\n2\n1\n2\n1\n3\n3\n1\n2\n3",
+                            "value_type": "scalar"
+                        }
+                    ],
+                    "st_mk": [
+                        {
+                            "extracted_by": "detection_region",
+                            "value": "1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n2\n1\n1\n1\n1\n2\n1\n2\n1\n1\n1\n1\n1\n1\n1\n2\n2\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n2\n1",
+                            "value_type": "scalar"
+                        }
+                    ],
+                    "nilai_akhir": [
+                        {
+                            "extracted_by": "detection_region",
+                            "value": "B\nC\nB\nC\nB\nB\nA\nC\nB\nC\nC\nB\nC\nC\nA\nC\nC\nC\nC\nC\nC\nA\nA\nB\nC\nC\nB\nC\nB\nC\nA\nC\nB\nB\nC\nA\nC\nB\nB\nC\nB\nC\nC\nB\nB\nA\nA\nC\nD\nC\nC\nE\nB\nB\nB\nA\nB\nA\nE\nA",
+                            "value_type": "scalar"
+                        }
+                    ],
+                    "ket": [
+                        {
+                            "extracted_by": "detection_region",
+                            "value": "L\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nL\nT\nL\nL\nT\nL\nL\nL\nL\nL\nL\nT\nL",
+                            "value_type": "scalar"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "hal2": {
+        "status": "ok",
+        "metadata": {
+            "extractor_id": "03850ae4-032b-4515-bdde-a61f5f1a7bcc",
+            "request_id": "d16233cc-5245-4773-a1bd-ebb17d1394dc",
+            "usage": 1
+        },
+        "documents": [
+            {
+                "extractor_id": "03850ae4-032b-4515-bdde-a61f5f1a7bcc",
+                "metadata": {
+                    "page_no": 1,
+                    "slice_no": 1,
+                    "extractor_type": "custom"
+                },
+                "data": {
+                    "matakuliah": "MOBILE COMPUTING\nPRAKTEK MOBILE COMPUTING",
+                    "kd_matkul": "4122201\n4122202",
+                    "sks": "2\n1",
+                    "st_mk": "1\n1",
+                    "nilai_akhir": "A\nC",
+                    "ket": "L\nL"
+                },
+                "detailed_data": {
+                    "matakuliah": [
+                        {
+                            "extracted_by": "detection_region",
+                            "value": "MOBILE COMPUTING\nPRAKTEK MOBILE COMPUTING",
+                            "value_type": "scalar"
+                        }
+                    ],
+                    "kd_matkul": [
+                        {
+                            "extracted_by": "detection_region",
+                            "value": "4122201\n4122202",
+                            "value_type": "scalar"
+                        }
+                    ],
+                    "sks": [
+                        {
+                            "extracted_by": "detection_region",
+                            "value": "2\n1",
+                            "value_type": "scalar"
+                        }
+                    ],
+                    "st_mk": [
+                        {
+                            "extracted_by": "detection_region",
+                            "value": "1\n1",
+                            "value_type": "scalar"
+                        }
+                    ],
+                    "nilai_akhir": [
+                        {
+                            "extracted_by": "detection_region",
+                            "value": "A\nC",
+                            "value_type": "scalar"
+                        }
+                    ],
+                    "ket": [
+                        {
+                            "extracted_by": "detection_region",
+                            "value": "L\nL",
+                            "value_type": "scalar"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

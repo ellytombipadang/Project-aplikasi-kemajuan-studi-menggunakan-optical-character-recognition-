@@ -1,0 +1,2 @@
+extrakid_trans_hal-1: 0d5b82bc-7198-40b8-bcfb-cd420da99aad
+extrakid_trans_hal-2: 03850ae4-032b-4515-bdde-a61f5f1a7bcc
