@@ -10,7 +10,8 @@ const { uploadFile } = require('../scripts/uploadFile');
 const { filterQuery } = require('../scripts/filterQuery');
 const tableName = "mahasiswa";
 const primaryKey = "npm";
-
+var csv = require("csvtojson");
+const tokenFormX = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNvdXJjZV9vd25lcl9pZCI6ImE5YzkyMjUxLWQ4YzQtNGNjZS1hNjJiLTU1M2QyMzA3OTczYSIsIndvcmtlcl90b2tlbl9pZCI6IjFiMjg3NmRlLTJmOGYtNGU2OC04MGI5LThkMjczMTU1YTM4ZiIsInVzZXJfaWQiOiJhOWM5MjI1MS1kOGM0LTRjY2UtYTYyYi01NTNkMjMwNzk3M2EifQ.FrSGyeIaNQLbooGp90ACyGsE7KPfRoIAty2sWKU2JOg";
 const schema = Joi.object({
     nama_depan: Joi.string().required().error(errors => {
         messageText(errors, "Nama depan");
@@ -37,9 +38,18 @@ const schema = Joi.object({
         messageText(errors, "Jenis kelamin");
         return errors;
     }),
+    id_jurusan: Joi.required().error(errors => {
+        messageText(errors, "Id Jurusan");
+        return errors;
+    }),
 })
 
-const json_to_csv = (data, protocol, host) => {
+const csv_to_json = async (path) => {
+    const jsonArrayObj = await csv().fromFile(path);
+    return jsonArrayObj;
+}
+
+const json_to_csv = (data) => {
     let header = "Mata kuliah,Kode matkul,sks,st_mk,Nilai akhir,ket\n";
     let csvStr = "";
     let transkrip = data;
@@ -75,14 +85,14 @@ const json_to_csv = (data, protocol, host) => {
         const { data } = documents[0];
         // Jumlah data
         let a = data["kd_matkul"].split("\n"); // -> [122,123,]
-        a.pop();
+        // a.pop();
         let leng = a.length;
         for (let i = 0; i < leng; i++) {
             let arr = [];
             column.forEach(colItem => {
                 if (colItem.data.length === 0) {
                     let splt = data[colItem.id].split("\n");
-                    splt.pop();
+                    // splt.pop();
                     colItem.data = splt;
                 }
                 arr.push(colItem.data[i]);
@@ -91,13 +101,9 @@ const json_to_csv = (data, protocol, host) => {
             csvStr += "\n";
         }
     })
-    if (fs.existsSync("./public/transkrip.csv")) {
-        fs.unlinkSync("./public/transkrip.csv")
-    }
-    // Append the CSV row to the file
-    fs.appendFileSync("./public/transkrip.csv", csvStr);
-    return `${protocol}://${host}/transkrip.csv`;
+    return csvStr
 }
+
 async function post_request(url, header, body) {
     const res = await fetch(url, {
         method: 'POST',
@@ -131,16 +137,68 @@ async function extractEachPage(filePath) {
     return arr;
 }
 
+exports.checkTranskrip = (req, res) => {
+    const url = 'https://worker.formextractorai.com/v2/extract';
+    if (!req.files || !req.files.pdf) {
+        return res.status(400).send('No files were uploaded.');
+    };
+    const pdfFile = req.files.pdf;  // get the uploaded file
+    let uploadPath = path.join(__dirname, 'uploads', pdfFile.name);
+    uploadPath = "uploads";
+    pdfFile.mv(uploadPath, async (err) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        try {
+            // Process the PDF and save each page
+            const page = await extractEachPage(uploadPath);
+            const hal1 = await post_request(
+                url,
+                {
+                    accept: 'application/json',
+                    'X-WORKER-EXTRACTOR-ID': '27c11563-5c1a-479b-8352-0b103e4097ed',
+                    'X-WORKER-ENCODING': 'raw',
+                    'X-WORKER-PDF-DPI': '150',
+                    'X-WORKER-ASYNC': 'false',
+                    'X-WORKER-AUTO-ADJUST-IMAGE-SIZE': 'true',
+                    'X-WORKER-OUTPUT-OCR': 'false',
+                    'X-WORKER-PROCESSING-MODE': 'per-page',
+                    'content-type': 'image/*',
+                    'X-WORKER-TOKEN': tokenFormX
+                },
+                page[0]
+            );
+            const { documents } = hal1;
+            const { data } = documents[0];
+            const npm = data.npm;
+            const nama_mahasiswa = data.nama_mahasiswa;
+            const tanggal_lahir = data.tanggal_lahir;
+            const dosen_wali = data.dosen_wali;
+            res.status(200).send({
+                result: {
+                    npm,
+                    nama_mahasiswa,
+                    tanggal_lahir,
+                    dosen_wali
+                }
+            });
+        } catch (err) {
+            res.status(500).send('Error processing the PDF file');
+        }
+        fs.unlinkSync(uploadPath);
+    })
+}
+
 exports.ekstraDocument = (req, res) => {
     // https://help.formx.ai/reference/document-extraction
     const url = 'https://worker.formextractorai.com/v2/extract';
+    const npm = req?.body?.npm;
     if (!req.files || !req.files.pdf) {
         return res.status(400).send('No files were uploaded.');
     }
     const pdfFile = req.files.pdf;  // get the uploaded file
     let uploadPath = path.join(__dirname, 'uploads', pdfFile.name);
     uploadPath = "uploads/";
-
     // Save the file temporarily in the uploads directory
     pdfFile.mv(uploadPath, async (err) => {
         if (err) {
@@ -154,7 +212,7 @@ exports.ekstraDocument = (req, res) => {
                 url,
                 {
                     accept: 'application/json',
-                    'X-WORKER-EXTRACTOR-ID': '0d5b82bc-7198-40b8-bcfb-cd420da99aad',
+                    'X-WORKER-EXTRACTOR-ID': '855625ff-ab94-4daa-b142-bab5c6e77527',
                     'X-WORKER-ENCODING': 'raw',
                     'X-WORKER-PDF-DPI': '150',
                     'X-WORKER-ASYNC': 'false',
@@ -162,7 +220,7 @@ exports.ekstraDocument = (req, res) => {
                     'X-WORKER-OUTPUT-OCR': 'false',
                     'X-WORKER-PROCESSING-MODE': 'per-page',
                     'content-type': 'image/*',
-                    'X-WORKER-TOKEN': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNvdXJjZV9vd25lcl9pZCI6IjM3NjIxZjhlLTEyMTUtNGRiZC05YTUxLTExNTU4YjEyZjdmYiIsIndvcmtlcl90b2tlbl9pZCI6ImYzNzhjMGQyLTE5ZGEtNDg5MS1hYzExLTdiZTcyYjZkZGQ1ZSIsInVzZXJfaWQiOiIzNzYyMWY4ZS0xMjE1LTRkYmQtOWE1MS0xMTU1OGIxMmY3ZmIifQ.KcF7SugUt74qEPTLetkVjjmZUEkwNL0vlDgSGOg-jwc'
+                    'X-WORKER-TOKEN': tokenFormX
                 },
                 data[0]
             );
@@ -170,7 +228,7 @@ exports.ekstraDocument = (req, res) => {
                 url,
                 {
                     accept: 'application/json',
-                    'X-WORKER-EXTRACTOR-ID': '03850ae4-032b-4515-bdde-a61f5f1a7bcc',
+                    'X-WORKER-EXTRACTOR-ID': '78ae9fa7-86e6-4ac2-b287-54bdfac0f0b3',
                     'X-WORKER-ENCODING': 'raw',
                     'X-WORKER-PDF-DPI': '150',
                     'X-WORKER-ASYNC': 'false',
@@ -178,21 +236,32 @@ exports.ekstraDocument = (req, res) => {
                     'X-WORKER-OUTPUT-OCR': 'false',
                     'X-WORKER-PROCESSING-MODE': 'per-page',
                     'content-type': 'image/*',
-                    'X-WORKER-TOKEN': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNvdXJjZV9vd25lcl9pZCI6IjM3NjIxZjhlLTEyMTUtNGRiZC05YTUxLTExNTU4YjEyZjdmYiIsIndvcmtlcl90b2tlbl9pZCI6ImYzNzhjMGQyLTE5ZGEtNDg5MS1hYzExLTdiZTcyYjZkZGQ1ZSIsInVzZXJfaWQiOiIzNzYyMWY4ZS0xMjE1LTRkYmQtOWE1MS0xMTU1OGIxMmY3ZmIifQ.KcF7SugUt74qEPTLetkVjjmZUEkwNL0vlDgSGOg-jwc'
+                    'X-WORKER-TOKEN': tokenFormX
                 },
                 data[1]
             );
-            const link = json_to_csv({
+            const dates = new Date().getTime()
+            let link = `${req.protocol}://${req.hostname}:3005/transkrip/${npm}/transkrip_${dates}.csv`;
+            let path = `./public/transkrip/${npm}`
+            if (!fs.existsSync(path)) {
+                fs.mkdirSync(path, { recursive: true });
+            }
+            const content = json_to_csv({
                 hal1: hal1,
                 hal2: hal2
-            }, req.protocol, req.get("host"));
-            // Optionally delete the original uploaded file if no longer needed;            
-            res.send(link);
+            });
+            console.log({
+                hal1: hal1,
+                hal2: hal2
+            })
+            // Create the CSV file
+            fs.writeFileSync(path + `/transkrip_${dates}.csv`, content);
+            const result = await csv_to_json(path + `/transkrip_${dates}.csv`)
+            res.status(200).send({ link: link, result: result });
         } catch (err) {
             console.error(err);
             res.status(500).send('Error processing the PDF file');
         }
-        fs.unlinkSync(uploadPath);
     });
 };
 
@@ -265,7 +334,6 @@ exports.readCSVFile = (req, res) => {
     timeOut = setTimeout(() => {
         let fileName = url1.split("/")[url1.split("/").length - 1];
         let csvFilePath = `./public/transkrip/${fileName}`;
-        console.log(csvFilePath);
         if (fs.existsSync(csvFilePath)) {
             csvToJSON()
                 .fromFile(csvFilePath)
@@ -333,6 +401,96 @@ exports.selectedMahasiswa = (req, res) => {
             WHERE
                 ${tableName}.${primaryKey} = '${id}'
         `;
+    sql.query(queryValue, (err, result) => {
+        if (err) {
+            console.log("error: ", err);
+            res.status(500).send(err);
+            return;
+        };
+        res.status(200).send(result);
+    });
+}
+
+
+exports.csvToJSON = async (req, res) => {
+    if (fs.existsSync("./public/transkrip.csv")) {
+        try {
+            const result = await csv_to_json("./public/transkrip.csv")
+            res.status(200).send({ link: `${req.protocol}://${req.get("host")}/transkrip.csv`, result: result })
+            // res.status(200).send(result);
+        } catch (err) {
+            throw err;
+        }
+    } else {
+        res.status(500).send("FILE not exist");
+    }
+}
+
+
+exports.input_khs = (req, res) => {
+    let queryValue;
+    queryValue = `INSERT INTO khs SET ?`;
+    sql.query(queryValue, req.body, (err, result) => {
+        if (err) {
+            console.log("error: ", err);
+            res.status(500).send(err);
+            return;
+        }
+        res.status(200).send(result);
+    });
+}
+
+exports.input_nilai_khs = (req, res) => {
+    let queryValue;
+    queryValue = `INSERT INTO nilai_khs SET ?`;
+    sql.query(queryValue, req.body, (err, result) => {
+        if (err) {
+            console.log("error: ", err);
+            res.status(500).send(err);
+            return;
+        }
+        res.status(200).send(result);
+    });
+}
+
+exports.get_khs = (req, res) => {
+    let queryValue;
+    const { id } = req.params;
+    queryValue =
+        `
+            SELECT 
+                khs.*
+            FROM 
+                khs
+            WHERE
+                npm = '${id}'
+            ORDER BY 
+                tanggal_masuk DESC
+        `;
+
+    sql.query(queryValue, (err, result) => {
+        if (err) {
+            console.log("error: ", err);
+            res.status(500).send(err);
+            return;
+        };
+        res.status(200).send(result);
+    });
+}
+
+exports.get_nilai_khs = (req, res) => {
+    let queryValue;
+    const { id } = req.params;
+    queryValue =
+        `
+            SELECT 
+                nilai_khs.*
+            FROM 
+                nilai_khs
+            WHERE
+                id_khs = '${id}'
+        `;
+
     sql.query(queryValue, (err, result) => {
         if (err) {
             console.log("error: ", err);

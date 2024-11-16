@@ -10,10 +10,6 @@ const schema = Joi.object({
         messageText(errors, "Username");
         return errors;
     }),
-    username: Joi.string().required().error(errors => {
-        messageText(errors, "Username");
-        return errors;
-    }),
     password: Joi.string().required().error(errors => {
         messageText(errors, "Password");
         return errors;
