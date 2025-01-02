@@ -59,11 +59,18 @@ exports.signIn = async (req, res) => {
                 res.status(500).send(err);
                 return;
             }
+            if(result.length === 0) {
+                res.status(401).send({
+                    details: [
+                        {
+                            message: "Username atau password salah"
+                        }
+                    ]
+                });
+                return;
+            }
             accessToken({ ...result[0], role: role }).then((token) => {
                 res.status(200).send(token);
-                // res.json({
-                //     token
-                // })
             })
         });
     } catch (err) {

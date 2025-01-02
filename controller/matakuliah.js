@@ -86,7 +86,8 @@ exports.input = async (req, res) => {
 
 exports.get_data = async (req, res) => {
     let queryValue;
-    const query = req.query;
+    const { id_jurusan } = req.params;
+    const query = { ...req.query, id_jurusan: id_jurusan }
     queryValue =
         `
             SELECT 
@@ -97,6 +98,25 @@ exports.get_data = async (req, res) => {
         `;
 
     sql.query(queryValue, (err, result) => {
+        if (err) {
+            console.log("error: ", err);
+            res.status(500).send(err);
+            return;
+        };
+        res.status(200).send(result);
+    });
+}
+
+exports.delete = (req, res) => {
+    const { id_mata_kuliah } = req.params;
+    let query = `
+        DELETE 
+            FROM 
+        mata_kuliah
+            WHERE
+        mata_kuliah.id_mata_kuliah  = '${id_mata_kuliah}'
+    `;
+    sql.query(query, (err, result) => {
         if (err) {
             console.log("error: ", err);
             res.status(500).send(err);

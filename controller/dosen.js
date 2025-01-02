@@ -16,6 +16,10 @@ const schema = Joi.object({
         messageText(errors, "Tanggal lahir");
         return errors;
     }),
+    password: Joi.string().required().error(errors => {
+        messageText(errors, "password");
+        return errors;
+    }),
     nidn: Joi.number().required().messages().error(errors => {
         messageText(errors, "nidn");
         return errors;
@@ -30,6 +34,10 @@ const schema = Joi.object({
     }),
     jenis_kelamin: Joi.required().error(errors => {
         messageText(errors, "Jenis kelamin");
+        return errors;
+    }),
+    id_jurusan: Joi.required().error(errors => {
+        messageText(errors, "Id Jurusan");
         return errors;
     }),
 });
@@ -110,7 +118,8 @@ exports.inputFoto = (req, res) => {
 
 exports.getData = (req, res) => {
     let queryValue;
-    const query = req.query;
+    const { id_jurusan } = req.params;
+    const query = { ...req.query, id_jurusan: id_jurusan }
     queryValue =
         `
             SELECT 
@@ -144,6 +153,25 @@ exports.selectedDosen = (req, res) => {
                 ${tableName}.${primaryKey} = '${id}'
         `;
     sql.query(queryValue, (err, result) => {
+        if (err) {
+            console.log("error: ", err);
+            res.status(500).send(err);
+            return;
+        };
+        res.status(200).send(result);
+    });
+}
+
+exports.delete = (req, res) => {
+    const { nidn } = req.params;
+    let query = `
+        DELETE 
+            FROM 
+        dosen 
+            WHERE
+        dosen.nidn = '${nidn}'
+    `;
+    sql.query(query, (err, result) => {
         if (err) {
             console.log("error: ", err);
             res.status(500).send(err);
