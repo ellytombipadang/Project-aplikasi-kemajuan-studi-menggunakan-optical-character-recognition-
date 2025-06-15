@@ -8,8 +8,12 @@ const path = require('path');
 const sql = require("./db");
 const { uploadFile } = require('../scripts/uploadFile');
 const { filterQuery } = require('../scripts/filterQuery');
-const tableName = "mata_kuliah";
 const primaryKey = "npm";
+
+const tableName = (kode) => {
+    if (kode == "421") return "mata_kuliah_si";
+    return "mata_kuliah_ti";
+}
 
 const schema = Joi.object({
     id_mata_kuliah: Joi.string().required().error(errors => {
@@ -28,10 +32,8 @@ const schema = Joi.object({
         messageText(errors, "SKS");
         return errors;
     }),
-    id_jurusan: Joi.required().error(errors => {
-        messageText(errors, "Id Jurusan");
-        return errors;
-    }),
+    // id_jurusan: Joi.string(),
+    id_kurikulum: Joi.string(),
 });
 
 exports.readCSVFile = (req, res) => {
@@ -67,9 +69,10 @@ exports.readCSVFile = (req, res) => {
 exports.input = async (req, res) => {
     // const { nim, nama_depan, nama_belakang, alamat, jenis_kelamin } = req.body;
     try {
+        const { id_jurusan } = req.params;
         const value = await schema.validateAsync({ ...req.body });
         let queryValue;
-        queryValue = `INSERT INTO ${tableName} SET ?`;
+        queryValue = `INSERT INTO ${tableName(id_jurusan)} SET ?`;
         sql.query(queryValue, req.body, (err, result) => {
             if (err) {
                 console.log("error: ", err);
@@ -87,14 +90,17 @@ exports.input = async (req, res) => {
 exports.get_data = async (req, res) => {
     let queryValue;
     const { id_jurusan } = req.params;
-    const query = { ...req.query, id_jurusan: id_jurusan }
+    const query = { ...req.query }
     queryValue =
         `
             SELECT 
-                mata_kuliah.*
+                ${tableName(id_jurusan)}.*
             FROM 
-                mata_kuliah
+                ${tableName(id_jurusan)}
             ${filterQuery(query)}
+                ORDER BY
+            ${tableName(id_jurusan)}.mata_kuliah 
+                ASC
         `;
 
     sql.query(queryValue, (err, result) => {
@@ -108,13 +114,13 @@ exports.get_data = async (req, res) => {
 }
 
 exports.delete = (req, res) => {
-    const { id_mata_kuliah } = req.params;
+    const { id_mata_kuliah, id_jurusan } = req.params;
     let query = `
         DELETE 
             FROM 
-        mata_kuliah
+        ${tableName(id_jurusan)}
             WHERE
-        mata_kuliah.id_mata_kuliah  = '${id_mata_kuliah}'
+        ${tableName(id_jurusan)}.id_mata_kuliah  = '${id_mata_kuliah}'
     `;
     sql.query(query, (err, result) => {
         if (err) {

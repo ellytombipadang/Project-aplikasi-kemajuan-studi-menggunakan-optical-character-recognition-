@@ -1,5 +1,6 @@
 const Joi = require('joi');
 var csvToJSON = require("csvtojson");
+let csv_ = require('convert-csv-to-json');
 const { messageText } = require('../scripts/messageText');
 const fetch = require('node-fetch');
 const fs = require('fs');
@@ -12,34 +13,35 @@ const tableName = "mahasiswa";
 const primaryKey = "npm";
 var csv = require("csvtojson");
 // const tokenFormX = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNvdXJjZV9vd25lcl9pZCI6IjgxYzM5YjU1LWZmM2UtNDc4ZS1iNDdhLTdkMjE0ZjJkNTY0NSIsIndvcmtlcl90b2tlbl9pZCI6ImE3OTcxNWVlLWY1YjEtNDIxMS1iMDk5LTUyZjM3MTk2OTYzNyIsInVzZXJfaWQiOiI4MWMzOWI1NS1mZjNlLTQ3OGUtYjQ3YS03ZDIxNGYyZDU2NDUifQ.3fk5YfD3Cn3Y9UZkOIK8iv4qKmZbYAf7aRcHlldsDwc";
-const tokenFormX = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNvdXJjZV9vd25lcl9pZCI6IjFhM2JmOWNmLWZlZDctNGNjMy1iOTk1LTNiMmRlMzgzMDYxZiIsIndvcmtlcl90b2tlbl9pZCI6IjI1OGIwNjViLTY4MGEtNDhlMC05YTVlLTNhMzEzYzlmNWVhOSIsInVzZXJfaWQiOiIxYTNiZjljZi1mZWQ3LTRjYzMtYjk5NS0zYjJkZTM4MzA2MWYifQ.UNEVFraCQjl-bmoYPhmD-V9DrEVLS0aalhT8ssp-KGo";
+const tokenFormX = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNvdXJjZV9vd25lcl9pZCI6IjkzMmRhY2QyLTU5YmYtNDBiYi05MDZkLTk2MGY2Yjg5Nzk0OCIsIndvcmtlcl90b2tlbl9pZCI6IjY1NWUxMzMxLTZmYmItNGRhOC1iYzk4LTY4ZjhiYmMwZGIyZSIsInVzZXJfaWQiOiI5MzJkYWNkMi01OWJmLTQwYmItOTA2ZC05NjBmNmI4OTc5NDgifQ.cHcefpH173cID7kGpVikd_k2FTM_JACPqNbqdjeKS98";
 const schema = Joi.object({
-    nama_depan: Joi.string().required().error(errors => {
-        messageText(errors, "Nama depan");
+    nama: Joi.string().required().error(errors => {
+        messageText(errors, "Nama");
         return errors;
     }),
-    nama_belakang: Joi.string(),
+    asal_sma: Joi.string().required().error(errors => {
+        messageText(errors, "Asal SMA");
+        return errors;
+    }),
+    id_dosen_wali: Joi.string(),
+    id_users: Joi.string(),
     npm: Joi.number().required().messages().error(errors => {
         messageText(errors, "NPM");
         return errors;
     }),
-    password: Joi.string().required().error(errors => {
-        messageText(errors, "password");
-        return errors;
-    }),
-    tanggal_lahir: Joi.date().required().error(errors => {
+    tanggal_lahir: Joi.date().error(errors => {
         messageText(errors, "Tanggal lahir");
         return errors;
     }),
-    no_hp: Joi.number().min(11).required().error(errors => {
+    no_hp: Joi.number().error(errors => {
         messageText(errors, "Nomor HP");
         return errors;
     }),
-    alamat: Joi.required().error(errors => {
+    alamat: Joi.string().error(errors => {
         messageText(errors, "Alamat");
         return errors;
     }),
-    jenis_kelamin: Joi.required().error(errors => {
+    jenis_kelamin: Joi.string().error(errors => {
         messageText(errors, "Jenis kelamin");
         return errors;
     }),
@@ -53,7 +55,6 @@ const csv_to_json = async (path) => {
     const jsonArrayObj = await csv().fromFile(path);
     return jsonArrayObj;
 }
-
 const format_dns = (obj) => {
     let header = "KMK, Mata kuliah, SKS, ST MK, Nilai Akhir, Ket\n";
     const { data } = obj.documents[0];
@@ -66,7 +67,6 @@ const format_dns = (obj) => {
         });
         csvStr += `${arr.join(",")}\n`;
     });
-    console.log(csvStr);
     return csvStr
 }
 
@@ -76,51 +76,13 @@ const json_to_csv = (data) => {
     let transkrip = data;
     csvStr += header;
     Object.keys(transkrip).forEach(hal => {
-        let column = [
-            {
-                "data": [],
-                "id": "matakuliah"
-            },
-            {
-                "data": [],
-                "id": "kd_matkul"
-            },
-            {
-                "data": [],
-                "id": "sks"
-            },
-            {
-                "data": [],
-                "id": "st_mk"
-            },
-            {
-                "data": [],
-                "id": "nilai_akhir"
-            },
-            {
-                "data": [],
-                "id": "ket"
-            }
-        ];
         const { documents } = transkrip[hal]
         const { data } = documents[0];
-        // Jumlah data
-        let a = data["kd_matkul"].split("\n"); // -> [122,123,]
-        // a.pop();
-        let leng = a.length;
-        for (let i = 0; i < leng; i++) {
-            let arr = [];
-            column.forEach(colItem => {
-                if (colItem.data.length === 0) {
-                    let splt = data[colItem.id].split("\n");
-                    // splt.pop();
-                    colItem.data = splt;
-                }
-                arr.push(colItem.data[i]);
-            })
-            csvStr += arr.join(",");
+        data.table.forEach((x) => {
+            const { k_m_k, nama_mata_kuliah, sks, st_mk, n_a, ket } = x;
+            csvStr += `${nama_mata_kuliah},${k_m_k},${sks},${st_mk},${n_a},${ket}`;
             csvStr += "\n";
-        }
+        })
     })
     return csvStr
 }
@@ -177,7 +139,7 @@ exports.checkTranskrip = (req, res) => {
                 url,
                 {
                     accept: 'application/json',
-                    'X-WORKER-EXTRACTOR-ID': '5a3bb6b6-0016-437a-a3b9-935736c1ad55',
+                    'X-WORKER-EXTRACTOR-ID': '4cabf3a9-6768-4df3-8d3b-161106501cce',
                     'X-WORKER-ENCODING': 'raw',
                     'X-WORKER-PDF-DPI': '150',
                     'X-WORKER-ASYNC': 'false',
@@ -191,16 +153,12 @@ exports.checkTranskrip = (req, res) => {
             );
             const { documents } = hal1;
             const { data } = documents[0];
-            const npm = data.npm;
+            const npm = data.n_p_m;
             const nama_mahasiswa = data.nama_mahasiswa;
-            const tanggal_lahir = data.tanggal_lahir;
-            const dosen_wali = data.dosen_wali;
             res.status(200).send({
                 result: {
                     npm,
                     nama_mahasiswa,
-                    tanggal_lahir,
-                    dosen_wali
                 }
             });
         } catch (err) {
@@ -230,7 +188,7 @@ exports.extractDNS = (req, res) => {
                 url,
                 {
                     accept: 'application/json',
-                    'X-WORKER-EXTRACTOR-ID': "dc4c0fe1-c0a9-48ce-8200-77bdd18e4026",
+                    'X-WORKER-EXTRACTOR-ID': "4fa6f922-c5aa-4188-aebb-22494c286f62",
                     'X-WORKER-ENCODING': 'raw',
                     'X-WORKER-PDF-DPI': '150',
                     'X-WORKER-ASYNC': 'false',
@@ -319,7 +277,7 @@ exports.ekstraDocument = (req, res) => {
                 url,
                 {
                     accept: 'application/json',
-                    'X-WORKER-EXTRACTOR-ID': '32e2b7e1-9247-4ef9-8cf9-a6da582698e8',
+                    'X-WORKER-EXTRACTOR-ID': '4cabf3a9-6768-4df3-8d3b-161106501cce',
                     'X-WORKER-ENCODING': 'raw',
                     'X-WORKER-PDF-DPI': '150',
                     'X-WORKER-ASYNC': 'false',
@@ -335,7 +293,7 @@ exports.ekstraDocument = (req, res) => {
                 url,
                 {
                     accept: 'application/json',
-                    'X-WORKER-EXTRACTOR-ID': 'aa9bc793-6130-40b7-b747-5483fc6636fc',
+                    'X-WORKER-EXTRACTOR-ID': '4cabf3a9-6768-4df3-8d3b-161106501cce',
                     'X-WORKER-ENCODING': 'raw',
                     'X-WORKER-PDF-DPI': '150',
                     'X-WORKER-ASYNC': 'false',
@@ -411,7 +369,6 @@ exports.edit = async (req, res) => {
         queryValue = `UPDATE ${tableName} SET ? WHERE ${primaryKey} = '${id}'`;
         sql.query(queryValue, req.body, (err, result) => {
             if (err) {
-                console.log("error: ", err);
                 res.status(500).send(err);
                 return;
             }
@@ -439,13 +396,20 @@ exports.readCSVFile = (req, res) => {
     timeOut = setTimeout(() => {
         let fileName = url1.split("/")[url1.split("/").length - 1];
         let csvFilePath = `./public/transkrip/${fileName}`;
+        // const json = csv
         if (fs.existsSync(csvFilePath)) {
-            csvToJSON()
-                .fromFile(csvFilePath)
-                .then(function (jsonArrayObj) { //when parse finished, result will be emitted here.
-                    fs.unlinkSync(csvFilePath);
-                    res.status(200).send(jsonArrayObj);
-                })
+            const json = csv_.utf8Encoding()
+                                .supportQuotedField(true)
+                                .fieldDelimiter(',')
+                                .getJsonFromCsv(csvFilePath);
+            fs.unlinkSync(csvFilePath);
+            res.status(200).send(json);
+            // csvToJSON()
+            //     .fromFile(csvFilePath)
+            //     .then(function (jsonArrayObj) { //when parse finished, result will be emitted here.
+            //         fs.unlinkSync(csvFilePath);
+            //         res.status(200).send(jsonArrayObj);
+            //     })
         } else {
             res.status(500).send("FILE not exist")
         }
@@ -460,7 +424,6 @@ exports.input = async (req, res) => {
         queryValue = `INSERT INTO ${tableName} SET ?`;
         sql.query(queryValue, req.body, (err, result) => {
             if (err) {
-                console.log("error: ", err);
                 res.status(500).send(err);
                 return;
             }
@@ -473,21 +436,25 @@ exports.input = async (req, res) => {
 }
 exports.getData = (req, res) => {
     let queryValue;
-    const { id_jurusan } = req.params;
-    const query = { ...req.query, id_jurusan: id_jurusan }
+    const { id_dosen_wali } = req.params;
+    const query = { ...req.query, id_dosen_wali: id_dosen_wali }
     queryValue =
         `
             SELECT 
                 mahasiswa.*,
-                CONCAT(nama_depan,' ',nama_belakang) AS mahasiswa
+                users_.*,
+                mahasiswa.nama AS mahasiswa
             FROM 
                 mahasiswa
+            LEFT JOIN
+                users_
+            ON
+                users_.id_users=mahasiswa.id_users
             ${filterQuery(query)}
         `;
 
     sql.query(queryValue, (err, result) => {
         if (err) {
-            console.log("error: ", err);
             res.status(500).send(err);
             return;
         };
@@ -501,15 +468,23 @@ exports.selectedMahasiswa = (req, res) => {
     queryValue =
         `
             SELECT 
-                ${tableName}.*
+                ${tableName}.*,
+                dosen.nama AS nama_dosen_wali
             FROM 
                 ${tableName}
+            LEFT JOIN
+                dosen_wali
+            ON
+                dosen_wali.id_dosen_wali=${tableName}.id_dosen_wali
+            LEFT JOIN
+                dosen
+            ON
+                dosen.id_dosen=dosen_wali.id_dosen
             WHERE
                 ${tableName}.${primaryKey} = '${id}'
         `;
     sql.query(queryValue, (err, result) => {
         if (err) {
-            console.log("error: ", err);
             res.status(500).send(err);
             return;
         };
@@ -517,28 +492,11 @@ exports.selectedMahasiswa = (req, res) => {
     });
 }
 
-
-exports.csvToJSON = async (req, res) => {
-    if (fs.existsSync("./public/transkrip.csv")) {
-        try {
-            const result = await csv_to_json("./public/transkrip.csv")
-            res.status(200).send({ link: `${req.protocol}://${req.get("host")}/transkrip.csv`, result: result })
-            // res.status(200).send(result);
-        } catch (err) {
-            throw err;
-        }
-    } else {
-        res.status(500).send("FILE not exist");
-    }
-}
-
-
 exports.input_khs = (req, res) => {
     let queryValue;
     queryValue = `INSERT INTO khs SET ?`;
     sql.query(queryValue, req.body, (err, result) => {
         if (err) {
-            console.log("error: ", err);
             res.status(500).send(err);
             return;
         }
@@ -550,7 +508,6 @@ exports.input_dns = (req, res) => {
     queryValue = `INSERT INTO dns SET ?`;
     sql.query(queryValue, req.body, (err, result) => {
         if (err) {
-            console.log("error: ", err);
             res.status(500).send(err);
             return;
         }
@@ -560,10 +517,12 @@ exports.input_dns = (req, res) => {
 
 exports.input_nilai_dns = (req, res) => {
     let queryValue;
-    queryValue = `INSERT INTO nilai_dns SET ?`;
+    const { id_jurusan } = req.params;
+    let tableName = "nilai_dns_ti";
+    if (id_jurusan == "421") tableName = "nilai_dns_si"
+    queryValue = `INSERT INTO ${tableName} SET ?`;
     sql.query(queryValue, req.body, (err, result) => {
         if (err) {
-            console.log("error: ", err);
             res.status(500).send(err);
             return;
         }
@@ -573,10 +532,14 @@ exports.input_nilai_dns = (req, res) => {
 
 exports.input_nilai_khs = (req, res) => {
     let queryValue;
-    queryValue = `INSERT INTO nilai_khs SET ?`;
+    const { id_jurusan } = req.params;
+    let tableName = "nilai_khs_ti";
+    if (id_jurusan == "421") {
+        tableName = "nilai_khs_si";
+    }
+    queryValue = `INSERT INTO ${tableName} SET ?`;
     sql.query(queryValue, req.body, (err, result) => {
         if (err) {
-            console.log("error: ", err);
             res.status(500).send(err);
             return;
         }
@@ -586,6 +549,7 @@ exports.input_nilai_khs = (req, res) => {
 
 exports.get_khs = (req, res) => {
     let queryValue;
+    const { id_jurusan } = req.query;
     const { id } = req.params;
     queryValue =
         `
@@ -601,7 +565,6 @@ exports.get_khs = (req, res) => {
 
     sql.query(queryValue, (err, result) => {
         if (err) {
-            console.log("error: ", err);
             res.status(500).send(err);
             return;
         };
@@ -612,19 +575,21 @@ exports.get_khs = (req, res) => {
 exports.get_nilai_khs = (req, res) => {
     let queryValue;
     const { id } = req.params;
+    const { id_jurusan } = req.query;
+    let tableName = "nilai_khs_ti";
+    if (id_jurusan == "421") tableName="nilai_khs_si";
     queryValue =
         `
             SELECT 
-                nilai_khs.*
+                ${tableName}.*
             FROM 
-                nilai_khs
+                ${tableName}
             WHERE
                 id_khs = '${id}'
         `;
 
     sql.query(queryValue, (err, result) => {
         if (err) {
-            console.log("error: ", err);
             res.status(500).send(err);
             return;
         };
@@ -634,30 +599,33 @@ exports.get_nilai_khs = (req, res) => {
 
 exports.getNilaiDNS = (req, res) => {
     const { npm } = req.query;
+    const { id_jurusan } = req.query;
+    let tableName = "nilai_dns_ti";
+    if (id_jurusan == "421") tableName="nilai_dns_si";
     let query = `
         SELECT
-            nilai_dns.nilai_akhir,
-            nilai_dns.id_mata_kuliah
+            ${tableName}.nilai_akhir,
+            ${tableName}.id_mata_kuliah
         FROM
-            nilai_dns
+            ${tableName}
         LEFT JOIN
             dns
         ON
-            dns.id_dns=nilai_dns.id_dns
+            dns.id_dns=${tableName}.id_dns
         WHERE
             dns.npm=${npm}
         ORDER BY
-            nilai_dns.nilai_akhir ASC
+            ${tableName}.nilai_akhir ASC
     `;
     sql.query(query, (err, result) => {
         if (err) {
-            console.log("error: ", err);
             res.status(500).send(err);
             return;
         };
         res.status(200).send(result);
     });
 }
+
 
 exports.getUlangMatkul = (req, res) => {
     const { npm } = req.params;
@@ -674,7 +642,6 @@ exports.getUlangMatkul = (req, res) => {
     `;
     sql.query(query, (err, result) => {
         if (err) {
-            console.log("error: ", err);
             res.status(500).send(err);
             return;
         };
@@ -705,7 +672,6 @@ exports.getUlangMatkul = (req, res) => {
             `
             sql.query(query, (err, result2) => {
                 if (err) {
-                    console.log("error: ", err);
                     res.status(500).send(err);
                     return;
                 }
@@ -719,36 +685,42 @@ exports.getUlangMatkul = (req, res) => {
 }
 exports.getUlangMatkul2 = (req, res) => {
     const { npm } = req.params;
+    const { id_jurusan } = req.query;
+    let tableMatkul = "mata_kuliah_ti";
+    let tableDNS = "nilai_dns_ti";
+    if (id_jurusan == "421") {
+        tableMatkul = "mata_kuliah_si";
+        tableDNS = "nilai_dns_si";
+    };
     let query = `
         SELECT
-            nilai_dns.id_nilai_dns,
-            nilai_dns.id_dns,
-            nilai_dns.nilai_akhir,
-            nilai_dns.st_mk,
-            mata_kuliah.id_mata_kuliah,
-            mata_kuliah.mata_kuliah,
+            ${tableDNS}.id_nilai_dns,
+            ${tableDNS}.id_dns,
+            ${tableDNS}.nilai_akhir,
+            ${tableDNS}.st_mk,
+            ${tableMatkul}.id_mata_kuliah,
+            ${tableMatkul}.mata_kuliah,
             dns.npm,
             dns.tahun AS periode
         FROM
-            nilai_dns
+            ${tableDNS}
         JOIN
-            mata_kuliah
+            ${tableMatkul}
         ON
-            mata_kuliah.id_mata_kuliah=nilai_dns.id_mata_kuliah
+            ${tableMatkul}.id_mata_kuliah=${tableDNS}.id_mata_kuliah
         JOIN
             dns
         ON
-            dns.id_dns=nilai_dns.id_dns
+            dns.id_dns=${tableDNS}.id_dns
         WHERE
             dns.npm=${npm}
         AND
-            nilai_dns.keterangan = "T"
+            ${tableDNS}.keterangan = "T"
         ORDER BY
-            nilai_dns.id_mata_kuliah DESC
+            ${tableDNS}.id_mata_kuliah DESC
     `;
     sql.query(query, (err, result) => {
         if (err) {
-            console.log("error: ", err);
             res.status(500).send(err);
             return;
         };
@@ -763,7 +735,6 @@ exports.getUlangMatkul2 = (req, res) => {
             for (let j = i + 1; j < data.length; j++) {
                 const idMatkul2 = data[j]["id_mata_kuliah"];
                 if (idMatkul === idMatkul2) {
-                    // console.log(i);
                     arrItem.push({
                         ...data[j]
                     })
@@ -789,7 +760,6 @@ exports.delete = (req, res) => {
     `;
     sql.query(query, (err, result) => {
         if (err) {
-            console.log("error: ", err);
             res.status(500).send(err);
             return;
         };

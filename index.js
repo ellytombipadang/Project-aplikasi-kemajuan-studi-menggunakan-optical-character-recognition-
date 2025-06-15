@@ -17,11 +17,13 @@ app.use(express.static(path.join(__dirname, "private")));
 
 require("./routes/mahasiswa.route")(app);
 require("./routes/dosen.route")(app);
+require("./routes/dosen_wali.route")(app);
 require("./routes/auth.route")(app);
 require("./routes/prodi.route")(app);
 require("./routes/jurusan.route")(app);
 require("./routes/matakuliah.route")(app);
 require("./routes/dns.route")(app);
+require("./routes/csv.route")(app);
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

@@ -7,17 +7,12 @@ const tableName = "dosen";
 const primaryKey = "nidn";
 
 const schema = Joi.object({
-    nama_depan: Joi.string().required().error(errors => {
-        messageText(errors, "Nama depan");
+    nama: Joi.string().required().error(errors => {
+        messageText(errors, "Nama");
         return errors;
     }),
-    nama_belakang: Joi.string(),
     tanggal_lahir: Joi.date().required().error(errors => {
         messageText(errors, "Tanggal lahir");
-        return errors;
-    }),
-    password: Joi.string().required().error(errors => {
-        messageText(errors, "password");
         return errors;
     }),
     nidn: Joi.number().required().messages().error(errors => {
@@ -119,15 +114,27 @@ exports.inputFoto = (req, res) => {
 exports.getData = (req, res) => {
     let queryValue;
     const { id_jurusan } = req.params;
-    const query = { ...req.query, id_jurusan: id_jurusan }
+    let query = { ...req.query };
+    if (id_jurusan !== "x") {
+        query = { ...req.query, ["jurusan.id_jurusan"]: id_jurusan }
+    }
     queryValue =
         `
             SELECT 
                 ${tableName}.*,
-                CONCAT(nama_depan,' ',nama_belakang) AS dosen
+                ${tableName}.nama AS dosen,
+                jurusan.jurusan
             FROM 
                 ${tableName}
+            LEFT JOIN
+                jurusan
+            ON
+                dosen.id_jurusan=jurusan.id_jurusan
             ${filterQuery(query)}
+            GROUP BY
+                ${tableName}.nidn
+            ORDER BY
+                ${tableName}.nama ASC
         `;
 
     sql.query(queryValue, (err, result) => {

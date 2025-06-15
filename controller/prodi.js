@@ -66,9 +66,9 @@ exports.inputJurusan = async (req, res) => {
 exports.inputProdi = async (req, res) => {
     let sqlQuery;
     sqlQuery = `
-        INSERT INTO prodi (username, password, id_jurusan) VALUES ('${req.body.username}', '${req.body.password}', '${req.body.id_jurusan}')
+       INSERT INTO prodi SET ?
     `
-    sql.query(sqlQuery, (err, result) => {
+    sql.query(sqlQuery, req.body, (err, result) => {
         if (err) {
             console.log("error: ", err);
             res.status(500).send(err);
@@ -83,11 +83,16 @@ exports.getData = (req, res) => {
     const query = req.query;
     queryValue =
         `
-            SELECT 
+            SELECT
+                users_.*,
                 ${tableName}.*,
                 jurusan.jurusan
             FROM 
                 ${tableName}
+            LEFT JOIN
+                users_
+            ON
+                users_.id_users=${tableName}.id_users
             LEFT JOIN
                 jurusan
             ON
